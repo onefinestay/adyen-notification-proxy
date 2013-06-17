@@ -9,10 +9,14 @@ Getting started
 ::
 
     $ pip install -r requirements.txt
-    $ python proxy.py
-    * Running on http://127.0.0.1:5000/
 
-    $ curl localhost:5000
+    # proxy
+    $ gunicorn -w 3 -b 127.0.0.1:5000 adyen_notification_proxy.proxy:app
+
+    # management endpoint
+    $ gunicorn -w 3 -b 127.0.0.1:5001 adyen_notification_proxy.management:app
+
+    $ curl localhost:5001
 
     Adyen proxy
     ===========

@@ -13,7 +13,22 @@ NA = "n/a"
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 db = SQLAlchemy(app)
-app.debug = True
+
+
+@app.route('/')
+def help():
+    return """
+Adyen proxy
+===========
+
+Available endpoints:
+
+/                   (GET) display this help
+/list/              (GET) list all registered endpoints
+/register/          (POST callback url): register endpoint. Returns prefix
+/register-for-na/   (POST callback url): register endpoint for adyen console
+"""
+
 
 
 @app.route('/list/')
@@ -54,7 +69,8 @@ def adyen():
     try:
         endpoint = db.session.query(Endpoint).filter(Endpoint.ref == ref).one()
         url = endpoint.url
-        response = requests.post(url, data=request.form, headers=request.headers)
+        response = requests.post(
+            url, data=request.form, headers=request.headers)
         return response.content
     except NoResultFound:
         return "Unknown endpoint", 404

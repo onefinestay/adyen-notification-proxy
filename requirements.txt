@@ -1,0 +1,5 @@
+flask-sqlalchemy==0.16
+flask==0.10.1
+requests==1.2.3
+sqlalchemy==0.8.1
+werkzeug==0.9.1

@@ -38,21 +38,24 @@ _logger = logging.getLogger('adyen_notification_proxy')
 
 @app.route('/adyen/', methods=['POST'])
 def adyen():
-    merchant_ref = request.form['merchantReference']
+    merchant_ref = request.form.get('merchantReference', '')
     ref = merchant_ref[:UUID4_LENGTH]
+    url = None
     try:
         endpoint = db.session.query(Endpoint).filter(Endpoint.ref == ref).one()
         url = endpoint.url
         _logger.info("Forwarding %s to %s", ref, url)
-        response = requests.post(
+        requests.post(
             url, data=request.form, headers=request.headers)
-        return response.content
     except NoResultFound:
         _logger.info("Unknown reference %s", ref)
-        return "Unknown endpoint", 404
     except ConnectionError as ex:
-        _logger.info("Error forwarding %s to %s: %s", ref, url, ex)
-        return "Connection error", 500
+        _logger.info("Connection forwarding %s to %s: %s", ref, url, ex)
+    except Exception as ex:
+        _logger.info("Unknown error forwarding %s to %s: %s", ref, url, ex)
+
+    # adyen gets upset if we don't reply
+    return "[accepted]"
 
 
 if __name__ == '__main__':

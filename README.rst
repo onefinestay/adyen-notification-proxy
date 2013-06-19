@@ -44,3 +44,20 @@ route incoming notifications accordingly::
 
     $ curl -d "http://192.168.0.4:5001" adyen-proxy.example.com:5001/register/
     9bb896c0-b714-4a4c-9fc5-97f1f476e3f9
+
+
+Example supervisord setup
+-------------------------
+
+::
+
+    [program:adyen_proxy]
+    directory = /path/to/adyen-notification-proxy/
+    environment = DB_URI='/path/to/db.sqlite'
+    command = /path/to/bin/gunicorn -w 3 -b 0.0.0.0:5000 adyen_notification_proxy.proxy:app
+
+
+    [program:adyen_management]
+    directory = /path/to/adyen-notification-proxy/
+    environment = DB_URI='/path/to/db.sqlite'
+    command = /path/to/bin/gunicorn -w 3 -b 0.0.0.0:5001 adyen_notification_proxy.management:app

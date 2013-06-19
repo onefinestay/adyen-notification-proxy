@@ -19,8 +19,9 @@ Available endpoints:
 
 /                   (GET) display this help
 /list/              (GET) list all registered endpoints
-/register/          (POST callback url): register endpoint. Returns prefix
-/register-for-na/   (POST callback url): register endpoint for adyen console
+/register/          (POST callback url): register endpoint. Returns a uuid to
+                    be prefixed to your merchant reference for routing.
+                    Registering an existing url returns the existing reference
 """
 
 
@@ -33,26 +34,16 @@ def list():
 def register():
     url = request.data
     if url:
+        existing = db.session.query(Endpoint).filter_by(url=url).first()
+        if existing:
+            return existing.ref
+
         ref = str(uuid.uuid4())
         endpoint = Endpoint(ref=ref, url=url)
         db.session.add(endpoint)
         db.session.commit()
         return endpoint.ref
-    return "Error parsing input", 401
-
-@app.route('/register-for-na/', methods=['POST'])
-def register_for_na():
-    url = request.data
-    if url:
-        endpoint = db.session.query(Endpoint).filter(Endpoint.ref == NA
-            ).first()
-        if endpoint is None:
-            endpoint = Endpoint(ref="n/a")
-            db.session.add(endpoint)
-        endpoint.url = url
-        db.session.commit()
-        return endpoint.ref
-    return "Error parsing input", 401
+    return "Error parsing input", 400
 
 
 if __name__ == '__main__':

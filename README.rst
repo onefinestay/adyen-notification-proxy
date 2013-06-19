@@ -31,8 +31,9 @@ Getting started
 
     /                   (GET) display this help
     /list/              (GET) list all registered endpoints
-    /register/          (POST callback url): register endpoint. Returns prefix
-    /register-for-na/   (POST callback url): register endpoint for adyen console
+    /register/          (POST callback url): register endpoint. Returns a uuid to
+                        be prefixed to your merchant reference for routing.
+                        Registering an existing url returns the existing reference
 
 
 Point your adyen test account at the proxy endpoint,

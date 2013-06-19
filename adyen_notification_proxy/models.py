@@ -5,12 +5,8 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from adyen_notification_proxy import app
 
 
-here = os.path.abspath(os.path.dirname(__file__))
-make_abs = lambda fn: os.path.join(here, fn)
-
-
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{}'.format(
-    make_abs('test.db'))
+# default to in-memory sqlite
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DB_URI', 'sqlite://')
 db = SQLAlchemy(app)
 
 

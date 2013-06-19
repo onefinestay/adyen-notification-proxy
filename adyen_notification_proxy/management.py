@@ -30,6 +30,7 @@ def list():
     endpoints = db.session.query(Endpoint).all()
     return '\n'.join(str(e) for e in endpoints) + '\n'
 
+
 @app.route('/register/', methods=['POST'])
 def register():
     url = request.data

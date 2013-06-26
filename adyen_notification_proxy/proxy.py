@@ -11,6 +11,7 @@ from adyen_notification_proxy.models import db, Endpoint
 
 
 UUID4_LENGTH = 36
+TIMEOUT = 5  # in case of bad routes. don't want to end up in the penalty box!
 
 LOG_CONFIG = {
     'version': 1,
@@ -46,7 +47,7 @@ def adyen():
         url = endpoint.url
         _logger.info("Forwarding %s to %s", ref, url)
         requests.post(
-            url, data=request.form, headers=request.headers)
+            url, data=request.form, headers=request.headers, timeout=TIMEOUT)
     except NoResultFound:
         _logger.info("Unknown reference %s", ref)
     except ConnectionError as ex:

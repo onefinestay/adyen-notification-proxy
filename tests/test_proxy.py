@@ -12,7 +12,7 @@ proxy  # pyflakes, required to register views
 def assert_post(mockobj, url, data, headers=mock.ANY):
     wrapped_data = ImmutableMultiDict(data)
     mockobj.post.assert_called_once_with(
-        url, headers=mock.ANY, data=wrapped_data)
+        url, headers=mock.ANY, data=wrapped_data, timeout=mock.ANY)
 
 
 def test_empty(db):

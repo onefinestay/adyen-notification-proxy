@@ -61,7 +61,7 @@ def adyen():
     except Exception as ex:
         _logger.info("Unknown error forwarding %s to %s: %s", ref, url, ex)
 
-    if response.status_code != requests.codes.ok:
+    if (response.status_code >= 400):
         _logger.info(
             "Error forwarding %s to %s: %s", ref, url, response.status_code)
 

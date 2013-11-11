@@ -15,11 +15,17 @@ TIMEOUT = 5  # in case of bad routes. don't want to end up in the penalty box!
 
 LOG_CONFIG = {
     'version': 1,
+    'formatters': {
+        'default': {
+            'format': '%(asctime)s: %(message)s',
+        },
+    },
     'handlers': {
         'tempfile': {
             'class': 'logging.handlers.RotatingFileHandler',
             'level': 'INFO',
             'filename': '/tmp/adyen_proxy.log',
+            'formatter': 'default',
         },
     },
     'loggers': {
@@ -46,7 +52,7 @@ def adyen():
         endpoint = db.session.query(Endpoint).filter(Endpoint.ref == ref).one()
         url = endpoint.url
         _logger.info("Forwarding %s to %s", ref, url)
-        requests.post(
+        response = requests.post(
             url, data=request.form, headers=request.headers, timeout=TIMEOUT)
     except NoResultFound:
         _logger.info("Unknown reference %s", ref)
@@ -54,6 +60,10 @@ def adyen():
         _logger.info("Connection forwarding %s to %s: %s", ref, url, ex)
     except Exception as ex:
         _logger.info("Unknown error forwarding %s to %s: %s", ref, url, ex)
+
+    if (response.status_code >= 400):
+        _logger.info(
+            "Error forwarding %s to %s: %s", ref, url, response.status_code)
 
     # adyen gets upset if we don't reply
     return "[accepted]"

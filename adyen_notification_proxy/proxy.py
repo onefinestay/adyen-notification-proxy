@@ -54,16 +54,17 @@ def adyen():
         _logger.info("Forwarding %s to %s", ref, url)
         response = requests.post(
             url, data=request.form, headers=request.headers, timeout=TIMEOUT)
+
+        if (response.status_code >= 400):
+            _logger.info(
+                "Error forwarding %s to %s: %s", ref, url, response.status_code)
+
     except NoResultFound:
         _logger.info("Unknown reference %s", ref)
     except ConnectionError as ex:
         _logger.info("Connection forwarding %s to %s: %s", ref, url, ex)
     except Exception as ex:
         _logger.info("Unknown error forwarding %s to %s: %s", ref, url, ex)
-
-    if (response.status_code >= 400):
-        _logger.info(
-            "Error forwarding %s to %s: %s", ref, url, response.status_code)
 
     # adyen gets upset if we don't reply
     return "[accepted]"
